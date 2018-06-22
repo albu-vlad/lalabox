@@ -1,0 +1,605 @@
+<template>
+    <div class="page">
+        <div v-if="page">
+            <div class="page-content">
+                <div class="material">
+                    <input type="text" v-model="page.title" class="title" name="title" placeholder="Set Project Name"/>
+                    <hr>
+                    <label>Project Title</label>
+                </div>
+                <div class="errors" v-if="page.formErrors.length">
+                    <b>Please correct the following error(s):</b>
+                    <ul>
+                        <li v-for="error in page.formErrors">{{ error }}</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="messages"><label>Drupal Composer Clone: </label><span class="setup-message">{{page.drupalComposerMessage}}</span></div>
+                    <div class="messages" v-if="loaderShow === 'loader1'"><hollow-dots-spinner
+                            :animation-duration="2000"
+                            :dot-size="12"
+                            :dots-num="5"
+                            color="#46bef5"
+                    /></div>
+                    <div class="messages"><label>Composer php: </label><span class="setup-message">{{page.composeGetMessage}}</span></div>
+                    <div class="messages" v-if="loaderShow === 'loader2'"><hollow-dots-spinner
+                            :animation-duration="2000"
+                            :dot-size="12"
+                            :dots-num="5"
+                            color="#46bef5"
+                    /></div>
+                    <div class="messages"><label>Composer Install: </label><span class="setup-message">{{page.composerInstallMessage}}</span></div>
+                    <div class="messages" v-if="loaderShow === 'loader3'"><hollow-dots-spinner
+                            :animation-duration="2000"
+                            :dot-size="12"
+                            :dots-num="5"
+                            color="#46bef5"
+                    /></div>
+                    <div class="messages"><label>Lando Init: </label><span class="setup-message">{{page.landoInitMessage}}</span></div>
+                    <div class="messages" v-if="loaderShow === 'loader4'"><hollow-dots-spinner
+                            :animation-duration="2000"
+                            :dot-size="12"
+                            :dots-num="5"
+                            color="#46bef5"
+                    /></div>
+                    <div class="messages"><label>Project Info: </label>
+                        <div class="proj-info-container" v-if="projectInfo">
+                            <div class="proj-info">
+                                <p class="p-class">Project Urls: </p>
+                                <span v-html="projectInfo.projectUrls"></span>
+                            </div>
+                            <div class="proj-info">
+                                <p class="p-class">Db Credentials: </p>
+                                <span v-html="projectInfo.dbCredentials"></span>
+                            </div>
+                            <div class="proj-info">
+                                <p class="p-class">Db Connection: </p>
+                                <span v-html="projectInfo.dbConnection + ' ' + projectInfo.dbType"></span>
+                            </div>
+                            <div class="proj-info">
+                                <p class="p-class">Pma Urls: </p>
+                                <span v-html="projectInfo.pmaUrls"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="messages" v-if="loaderShow === 'loader5'"><hollow-dots-spinner
+                            :animation-duration="2000"
+                            :dot-size="12"
+                            :dots-num="5"
+                            color="#46bef5"
+                    /></div>
+                    <div class="messages"><label>Project Credentials: </label><span class="setup-message" v-html="projectCredentials"></span></div>
+                    <div class="messages" v-if="loaderShow === 'loader6'"><hollow-dots-spinner
+                            :animation-duration="2000"
+                            :dot-size="12"
+                            :dots-num="5"
+                            color="#46bef5"
+                    /></div>
+                    <div class="messages"><label>Project Status: </label><span class="setup-message">{{page.projectStartMessage}}</span></div>
+                    <div class="messages" v-if="loaderShow === 'loader7'"><hollow-dots-spinner
+                            :animation-duration="2000"
+                            :dot-size="12"
+                            :dots-num="5"
+                            color="#46bef5"
+                    /></div>
+                </div>
+                <div class="proj-buttons">
+                    <button class="delete-proj" @click="deletePage()" :disabled="disableButtons"><icon class="spinner-stop" name="spinner" pulse></icon>Delete Project</button>
+                    <button type="submit" @click="savePage()" :disabled="disableButtons"><icon class="spinner-stop" name="spinner" pulse></icon>Create Project</button>
+                    <button @click="stop()" :disabled="disableButtons"><icon class="spinner-stop" name="spinner" pulse></icon>Stop Project</button>
+                    <button @click="start()" :disabled="disableButtons"><icon class="spinner-stop" name="spinner" pulse></icon>Start Project</button>
+                </div>
+            </div>
+            <div v-if="disableButtons === true">
+                <div id="overlay"></div>
+            </div>
+        </div>
+        <div v-else>
+            <section>
+                <div class="center-section">
+                    <span class="loader-icon">
+                        <orbit-spinner
+                                :animation-duration="3000"
+                                :size="45"
+                                color="#32a0f5"
+                        />
+                    </span>
+                    <span class="app-title"><h1>Lalabox</h1></span>
+                    <hr>
+                    <h2>Blazing fast 3 min Environment install</h2>
+
+                    <p>Lalabox is a one click Drupal environment installer wrapped around Lando and build electron-vue.
+                    </p>
+                </div>
+
+            </section>
+        </div>
+    </div>
+</template>
+<script>
+  import 'vue-awesome/icons/spinner'
+  import Icon from 'vue-awesome/components/Icon'
+  import HollowDotsSpinner from 'epic-spinners/src/components/lib/HollowDotsSpinner'
+  import OrbitSpinner from 'epic-spinners/src/components/lib/OrbitSpinner'
+
+  // const fs = require('fs')
+  const remote = require('electron').remote
+  const app = remote.app
+  var home = app.getPath('home')
+  var exec = require('child_process').exec
+  var tableify = require('tableify')
+  const fs = require('fs')
+
+  const low = require('lowdb')
+  const FileSync = require('lowdb/adapters/FileSync')
+  var appProjPath = home + '/Drupal8Projects/'
+  const adapter = new FileSync(appProjPath + 'db.json')
+  const db = low(adapter)
+
+  export default {
+    name: 'Page',
+    props: ['page'],
+    data () {
+      return {
+        loaderShow: 'default',
+        disableButtons: false
+      }
+    },
+    computed: {
+      projectInfo: function () {
+        if (this.page.projectInfoMessage !== '') {
+          var info = JSON.parse(this.page.projectInfoMessage)
+          if (info.appserver) {
+            var projectUrls = tableify(info.appserver.urls)
+            var dbCredentials = tableify(info.database.creds)
+            var dbConnection = tableify(info.database.internal_connection)
+            var dbType = tableify(info.database.type)
+            if (info.pma) {
+              var pmaUrls = tableify(info.pma.urls)
+            }
+            return {'projectUrls': projectUrls, 'dbCredentials': dbCredentials, 'dbType': dbType, 'dbConnection': dbConnection, 'pmaUrls': pmaUrls}
+          }
+        }
+      },
+      projectCredentials: function () {
+        var str = this.page.projectCredentials
+        if (this.page.projectCredentials !== '') {
+          return '<div> User' + str.split('User')[1] + '</div>' + '<div> User' + str.split('User')[2] + '</div>'
+        }
+      }
+    },
+    methods: {
+      deletePage () {
+        this.$emit('delete-page')
+      },
+      buttonEnabled (boolToggle) {
+        if (boolToggle) {
+          return boolToggle
+        }
+      },
+      savePage () {
+        if (!fs.existsSync('/usr/local/bin/lando')) {
+          alert('lando is required Aborting!')
+        } else if (!fs.existsSync('/usr/bin/git')) {
+          alert('git is required Aborting!')
+        } else {
+          // @TODO os specifics
+          var projName = this.page.title
+          var projPath = appProjPath + projName
+          if (!this.page.title) return this.page.formErrors.push('Field is required')
+          if (/\s/.test(this.page.title)) return this.page.formErrors.push('Project name must not contain white spaces')
+          if (this.page.edit === 0) {
+            return this.page.formErrors.push('Project cannot be edited, to modify please delete and recreate')
+          } else {
+            db.get('pages')
+              .push(this.page)
+              .write()
+            var self = this
+            this.disableButtons = true
+            this.loaderShow = 'loader1'
+            this.drupalClone(projPath).then(function (result) {
+              self.loaderShow = 'loader2'
+              self.page.drupalComposerMessage = 'Drupal-composer cloned'
+              self.getComposer(projPath).then(function (result) {
+                self.loaderShow = 'loader3'
+                self.page.edit = 0
+                self.page.composeGetMessage = 'Downloaded composer install'
+                self.composerInstall(projPath).then(function (result) {
+                  self.loaderShow = 'loader4'
+                  self.page.composerInstallMessage = 'Executed composer.phar install'
+                  self.landoInit(projPath, projName).then(function (result) {
+                    self.loaderShow = 'loader5'
+                    self.page.landoInitMessage = 'Installed Drupal with standard profile and db'
+                    self.landoInfo(projPath).then(function (info) {
+                      self.loaderShow = 'loader6'
+                      self.page.projectInfoMessage = info
+                      self.landoDatabase(projPath).then(function (credentials) {
+                        self.loaderShow = 'loader7'
+                        self.page.projectCredentials = credentials
+                      }).then(function (result) {
+                        self.landoStop(projPath).then(function (test) {
+                          self.page.projectStartMessage = 'stopped'
+                          db.get('pages').write()
+                          self.disableButtons = false
+                          self.loaderShow = 'default'
+                        })
+                      })
+                    })
+                  })
+                })
+              })
+            })
+          }
+        }
+      },
+      stop () {
+        var self = this
+        self.loaderShow = 'loader7'
+        self.disableButtons = true
+        this.startProj().then(function (test) {
+          self.page.projectStartMessage = 'stopped'
+          self.disableButtons = false
+          self.loaderShow = 'default'
+        })
+      },
+      stopProj () {
+        var self = this
+        var projName = this.page.title
+        var projPath = appProjPath + projName
+        return new Promise(function (resolve, reject) {
+          self.buttonEnabled(true)
+          exec('cd ' + projPath + ' && /usr/local/bin/lando stop', (error, stdout, stderr) => {
+            if (error) {
+              console.error(`exec error: ${error}`)
+            }
+            var data = 'drupal clonedrrr'
+            resolve(data)
+          })
+        })
+      },
+      start () {
+        var self = this
+        self.loaderShow = 'loader7'
+        self.disableButtons = true
+        this.startProj().then(function (test) {
+          self.page.projectStartMessage = 'started'
+          self.disableButtons = false
+          self.loaderShow = 'default'
+        })
+      },
+      startProj () {
+        var self = this
+        var projName = self.page.title
+        var projPath = appProjPath + projName
+
+        return new Promise(function (resolve, reject) {
+          exec('cd ' + projPath + ' && /usr/local/bin/lando start', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`exec error: ${error}`)
+            }
+            var data = 'drupal clonedrrr'
+            resolve(data)
+          })
+        })
+      },
+      drupalClone (projPath) {
+        return new Promise(function (resolve, reject) {
+          exec('git clone https://github.com/drupal-composer/drupal-project.git ' + projPath, {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`exec error: ${error}`)
+            }
+            var data = 'drupal clonedrrr'
+            resolve(data)
+          })
+        })
+      },
+      getComposer (projPath) {
+        return new Promise(function (resolve, reject) {
+          exec('cd ' + projPath + ' && curl -s https://getcomposer.org/installer | php --', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`exec error: ${error}`)
+            }
+            var data = 'composer downloaded'
+            resolve(data)
+          })
+        })
+      },
+      composerInstall (projPath) {
+        return new Promise(function (resolve, reject) {
+          exec('cd ' + projPath + ' && php composer.phar install', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`exec error: ${error}`)
+            }
+            var data = 'composer install executed'
+            resolve(data)
+          })
+        })
+      },
+      landoInit (projPath, projName) {
+        return new Promise(function (resolve, reject) {
+          exec('cd ' + appProjPath + 'lando-recipe && cp .lando.yml ' + projPath + ' && cd ' + projPath + ' && sed -i -e \'s/{%project_name%}/' + projName + '/g\' .lando.yml && /usr/local/bin/lando start', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`exec error: ${error}`)
+            }
+            var data = 'composer install executed'
+            resolve(data)
+          })
+        })
+      },
+      landoStop (projPath) {
+        return new Promise(function (resolve, reject) {
+          exec('cd ' + projPath + ' && /usr/local/bin/lando stop', (error, stdout, stderr) => {
+            if (error) {
+              console.error(`exec error: ${error}`)
+            }
+            var data = '/usr/local/bin/lando start'
+            resolve(data)
+          })
+        })
+      },
+      landoInfo (projPath) {
+        return new Promise(function (resolve, reject) {
+          exec('cd ' + projPath + ' && /usr/local/bin/lando info', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`exec error: ${error}`)
+            }
+            var data = stdout.substr(stdout.indexOf('{'))
+            resolve(data)
+          })
+        })
+      },
+      landoDatabase (projPath) {
+        var that = this
+        return new Promise(function (resolve, reject) {
+          exec('cd ' + projPath + ' && /usr/local/bin/lando drush si standard --db-url=mysql://drupal8:drupal8@database/drupal8 --site-name=' + that.page.title + ' --yes', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`exec error: ${error}`)
+            }
+            var data = stdout
+            resolve(data)
+          })
+        })
+      }
+    },
+    components: {
+      Icon,
+      HollowDotsSpinner,
+      OrbitSpinner
+    }
+  }
+</script>
+<style lang="scss" scoped>
+
+
+    .page {
+        width: 100%;
+        height: 100vh;
+        transition: 0.3s;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        font-family: "adelle-sans", sans-serif;
+        font-weight: 100;
+        /*display: flex;*/
+        .page-content {
+            padding: 2rem;
+        }
+        #overlay {
+            position:fixed;
+            width:100%;
+            height:100%;
+            left:0;
+            top:0;
+            z-index:100000;
+        }
+        .proj-info {
+            text-align: left;
+            position: relative;
+            float: left;
+            color: darkgrey;
+            border-left: 2px solid #46bef5;
+            padding-left: 2px;
+            padding-right: 10px;
+            height: 100px;
+
+            .p-class {
+                font-weight: bold;
+                margin: 0px;
+            }
+
+            .proj-info-container {
+                margin-top: 10px;
+            }
+        }
+        .messages {
+            float: left;
+            width: 100%;
+            height: 100%;
+        }
+
+        .errors{
+            color: tomato;
+        }
+
+        section{
+            max-width: 600px;
+            height: 100%;
+            top:0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            margin-top: 25%;
+            margin-left: 10%;
+
+            .loader-icon {
+                position: relative;
+                float: left;
+                left: 35%;
+                bottom: 5px;
+            }
+
+            h1{
+                color: #46bef5;
+                font-weight: 300;
+                font-size: 2rem;
+                margin-bottom: 5px;
+                text-align: center;
+                font-weight: bold;
+            }
+
+            hr {
+                content: '';
+                display: block;
+                bottom: 0;
+                left: 0;
+                margin-left: 30%;
+                padding: 0;
+                width: 40%;
+                height: 2px;
+                border: none;
+                background: #46bef5;
+                z-index: 10;
+            }
+
+            h2{
+                font-weight: 300;
+                font-size: 1rem;
+                margin-bottom: 40px;
+                color: #46bef5;
+            }
+
+            p{
+                margin-bottom: 40px;
+                color: darkgrey;
+            }
+
+        }
+
+    }
+
+    .title {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+    }
+
+    label {
+        top: 10px;
+        left: 10px;
+        font-size: 1rem;
+        color: #46bef5;
+    }
+
+    button {
+        border-style: none;
+        padding: 0.5rem 0.75rem;
+        margin: 0.5rem;
+        border-radius: 0.25rem;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        background-color: darkgrey;
+
+        &:focus {
+            outline: none;
+        }
+
+        & > .spinner-stop {
+            display: none;
+        }
+
+        &:hover {
+            &.delete-proj {
+                background-color: tomato;
+            }
+            background-color: #46bef5;
+        }
+
+        &:active {
+            background-color: #46bef5;
+            &.delete-proj {
+                background-color: tomato;
+            }
+            & > .spinner-stop {
+                margin-right: 0.5rem;
+                display: inline;
+            }
+            > .content {
+                display: inline;
+            }
+        }
+    }
+
+    .fa-icon {
+        margin-right: 0.5rem;
+    }
+
+    .setup-message {
+        font-size: 1rem;
+        color: darkgrey;
+    }
+
+    .messages {
+        padding: 0.5rem;
+    }
+
+    .material {
+        position: relative;
+        padding: 0;
+        margin: 5px;
+        border: none;
+        overflow: visible;
+        width: 100%;
+
+        input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px 10px 8px;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            border-bottom: 1px solid #DDD;
+            font-size: 120%;
+            outline: none;
+            cursor: text;
+            background-color: transparent;
+
+            &::-webkit-input-placeholder {
+                transition: color 300ms ease;
+            }
+        }
+
+        hr {
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 2px;
+            border: none;
+            background: #46bef5;
+            font-size: 1px;
+            will-change: transform, visibility;
+            transition: all 200ms ease-out;
+            z-index: 10;
+        }
+
+        label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 1.5rem;
+            color: #46bef5;
+            transform-origin: 0 -150%;
+            transition: transform 300ms ease;
+            pointer-events: none;
+        }
+        input:focus ~ label,
+        input:valid ~ label {
+            transform: scale(0.6);
+        }
+    }
+
+</style>
