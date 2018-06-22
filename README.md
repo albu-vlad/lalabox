@@ -3,6 +3,8 @@
 #### Blazing fast 3 min Environment install
 > An electron-vue project
 
+![LalaBox demo](https://github.com/albu-vlad/lalabox/blob/master/Demo/Demo.png)
+
 #### About
 
 Lalabox is a one click Drupal environment installer wrapped around [Lando](https://github.com/lando/lando) and build with [electron-vue](https://github.com/SimulatedGREG/electron-vue). Lalabox provides an quick environment ready for development, configured with a standard profile and an installed database.
