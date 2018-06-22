@@ -3,6 +3,8 @@
 #### Blazing fast 3 min Environment install
 > An electron-vue project
 
+[Download for osx](https://github.com/albu-vlad/lalabox/raw/master/source/drupal-setup-0.0.0.dmg)
+
 ![LalaBox demo](https://github.com/albu-vlad/lalabox/blob/master/Demo/Demo.png)
 
 #### About
