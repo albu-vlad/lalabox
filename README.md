@@ -1,6 +1,6 @@
 
 # LalaBox
-####Blazing fast 3 min Environment install
+#### Blazing fast 3 min Environment install
 > An electron-vue project
 
 #### About
