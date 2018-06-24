@@ -45,6 +45,10 @@ function createProjFolder () {
     execSync('git clone https://github.com/albu-vlad/lando-drupal8-recipe.git ' + appProjPath + 'lando-recipe')
     fs.writeFileSync(appProjPath + 'db.json', content)
   }
+  if (!fs.existsSync(appProjPath + 'lando-recipe')) {
+    fs.mkdirSync(appProjPath + 'lando-recipe')
+    execSync('git clone https://github.com/albu-vlad/lando-drupal8-recipe.git ' + appProjPath + 'lando-recipe')
+  }
 }
 
 app.on('ready', createWindow)
