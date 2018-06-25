@@ -21,7 +21,7 @@
                             :dots-num="5"
                             color="#46bef5"
                     /></div>
-                    <div class="messages"><label>Composer php: </label><span class="setup-message">{{page.composeGetMessage}}</span></div>
+                    <div class="messages"><label>Lando Init: </label><span class="setup-message">{{page.landoInitMessage}}</span></div>
                     <div class="messages" v-if="loaderShow === 'loader2'"><hollow-dots-spinner
                             :animation-duration="2000"
                             :dot-size="12"
@@ -30,13 +30,6 @@
                     /></div>
                     <div class="messages"><label>Composer Install: </label><span class="setup-message">{{page.composerInstallMessage}}</span></div>
                     <div class="messages" v-if="loaderShow === 'loader3'"><hollow-dots-spinner
-                            :animation-duration="2000"
-                            :dot-size="12"
-                            :dots-num="5"
-                            color="#46bef5"
-                    /></div>
-                    <div class="messages"><label>Lando Init: </label><span class="setup-message">{{page.landoInitMessage}}</span></div>
-                    <div class="messages" v-if="loaderShow === 'loader4'"><hollow-dots-spinner
                             :animation-duration="2000"
                             :dot-size="12"
                             :dots-num="5"
@@ -106,9 +99,9 @@
                     </span>
                     <span class="app-title"><h1>Lalabox</h1></span>
                     <hr>
-                    <h2>Blazing fast 3 min Environment install</h2>
+                    <h2>Blazing fast 5 min Environment install</h2>
 
-                    <p>Lalabox is a one click Drupal environment installer wrapped around Lando and build electron-vue.
+                    <p>Lalabox is a one click Drupal environment installer wrapped around Lando and build on electron-vue.
                     </p>
                 </div>
 
@@ -162,9 +155,8 @@
         }
       },
       projectCredentials: function () {
-        var str = this.page.projectCredentials
         if (this.page.projectCredentials !== '') {
-          return '<div> User' + str.split('User')[1] + '</div>' + '<div> User' + str.split('User')[2] + '</div>'
+          return '<div> Installed Drupal site and database </div><div> User: admin</div><div> Password: admin</div>'
         }
       }
     },
@@ -198,31 +190,27 @@
             this.disableButtons = true
             this.loaderShow = 'loader1'
             this.drupalClone(projPath).then(function (result) {
-              self.loaderShow = 'loader2'
               self.page.drupalComposerMessage = 'Drupal-composer cloned'
-              self.getComposer(projPath).then(function (result) {
+              self.page.edit = 0
+              self.loaderShow = 'loader2'
+              self.landoInit(projPath, projName).then(function (result) {
+                self.page.landoInitMessage = 'Cloned and configured lando recipe template '
                 self.loaderShow = 'loader3'
-                self.page.edit = 0
-                self.page.composeGetMessage = 'Downloaded composer install'
                 self.composerInstall(projPath).then(function (result) {
+                  self.page.composerInstallMessage = 'Executed composer install'
                   self.loaderShow = 'loader4'
-                  self.page.composerInstallMessage = 'Executed composer.phar install'
-                  self.landoInit(projPath, projName).then(function (result) {
+                  self.landoInfo(projPath).then(function (info) {
+                    self.page.projectInfoMessage = info
                     self.loaderShow = 'loader5'
-                    self.page.landoInitMessage = 'Installed Drupal with standard profile and db'
-                    self.landoInfo(projPath).then(function (info) {
+                    self.landoDatabase(projPath).then(function (credentials) {
                       self.loaderShow = 'loader6'
-                      self.page.projectInfoMessage = info
-                      self.landoDatabase(projPath).then(function (credentials) {
-                        self.loaderShow = 'loader7'
-                        self.page.projectCredentials = credentials
-                      }).then(function (result) {
-                        self.landoStop(projPath).then(function (test) {
-                          self.page.projectStartMessage = 'stopped'
-                          db.get('pages').write()
-                          self.disableButtons = false
-                          self.loaderShow = 'default'
-                        })
+                      self.page.projectCredentials = credentials
+                    }).then(function (result) {
+                      self.landoStop(projPath).then(function (test) {
+                        self.page.projectStartMessage = 'stopped'
+                        db.get('pages').write()
+                        self.disableButtons = false
+                        self.loaderShow = 'default'
                       })
                     })
                   })
@@ -293,20 +281,9 @@
           })
         })
       },
-      getComposer (projPath) {
+      landoInit (projPath, projName) {
         return new Promise(function (resolve, reject) {
-          exec('cd ' + projPath + ' && curl -s https://getcomposer.org/installer | php --', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
-            if (error) {
-              console.error(`exec error: ${error}`)
-            }
-            var data = 'composer downloaded'
-            resolve(data)
-          })
-        })
-      },
-      composerInstall (projPath) {
-        return new Promise(function (resolve, reject) {
-          exec('cd ' + projPath + ' && php composer.phar install', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
+          exec('cd ' + appProjPath + 'lando-recipe && cp .lando.yml ' + projPath + ' && cd ' + projPath + ' && sed -i -e \'s/{%project_name%}/' + projName + '/g\' .lando.yml && /usr/local/bin/lando start', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
             if (error) {
               console.error(`exec error: ${error}`)
             }
@@ -315,9 +292,9 @@
           })
         })
       },
-      landoInit (projPath, projName) {
+      composerInstall (projPath) {
         return new Promise(function (resolve, reject) {
-          exec('cd ' + appProjPath + 'lando-recipe && cp .lando.yml ' + projPath + ' && cd ' + projPath + ' && sed -i -e \'s/{%project_name%}/' + projName + '/g\' .lando.yml && /usr/local/bin/lando start', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
+          exec('cd ' + projPath + ' && /usr/local/bin/lando composer install', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
             if (error) {
               console.error(`exec error: ${error}`)
             }
@@ -351,7 +328,11 @@
       landoDatabase (projPath) {
         var that = this
         return new Promise(function (resolve, reject) {
-          exec('cd ' + projPath + ' && /usr/local/bin/lando drush si standard --db-url=mysql://drupal8:drupal8@database/drupal8 --site-name=' + that.page.title + ' --yes', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
+          exec('cd ' + projPath + '/web && /usr/local/bin/lando drupal site:install standard' +
+            ' --site-name "' + that.page.title + '" --db-type mysql --db-port 3306 --db-user drupal8 --db-pass drupal8' +
+            ' --db-host database --db-name drupal8 --langcode en --site-mail admin@example.com' +
+            ' --account-name admin --account-mail admin@example.com --account-pass admin --no-interaction'
+            , {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
             if (error) {
               console.error(`exec error: ${error}`)
             }
