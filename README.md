@@ -6,6 +6,8 @@
 * [Download for osx](https://github.com/albu-vlad/lalabox/raw/master/source/drupal-setup-0.0.0.dmg)
 * [Download for ubuntu 17](https://github.com/albu-vlad/lalabox/blob/master/source/drupal-setup-0.0.0-x86_64.AppImage)
 
+This is WIP: There will be dragons!
+
 ![LalaBox demo](https://github.com/albu-vlad/lalabox/blob/master/Demo/Demo.png)
 
 #### About
