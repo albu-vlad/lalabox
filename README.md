@@ -3,8 +3,8 @@
 #### Blazing fast 5 min Environment install for Drupal8
 > An electron-vue project
 
-*[Download for osx](https://github.com/albu-vlad/lalabox/raw/master/source/drupal-setup-0.0.0.dmg)
-*[Download for ubuntu 17](https://github.com/albu-vlad/lalabox/blob/master/source/drupal-setup-0.0.0-x86_64.AppImage)
+* [Download for osx](https://github.com/albu-vlad/lalabox/raw/master/source/drupal-setup-0.0.0.dmg)
+* [Download for ubuntu 17](https://github.com/albu-vlad/lalabox/blob/master/source/drupal-setup-0.0.0-x86_64.AppImage)
 
 ![LalaBox demo](https://github.com/albu-vlad/lalabox/blob/master/Demo/Demo.png)
 
