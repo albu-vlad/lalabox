@@ -4,13 +4,14 @@
 > An electron-vue project
 
 [Download for osx](https://github.com/albu-vlad/lalabox/raw/master/source/drupal-setup-0.0.0.dmg)
+[Download for ubuntu 17](https://github.com/albu-vlad/lalabox/blob/master/source/drupal-setup-0.0.0-x86_64.AppImage)
 
 ![LalaBox demo](https://github.com/albu-vlad/lalabox/blob/master/Demo/Demo.png)
 
 #### About
 
 Lalabox is a one click Drupal8 environment installer wrapped around [Lando](https://github.com/lando/lando) and build with [electron-vue](https://github.com/SimulatedGREG/electron-vue). Lalabox provides a quick environment ready for development, configured with a standard profile and an installed database.
-It essentially runs a series of bash commands that clone drupal-composer project and composer.phar locally, initialises lando and uses drush to run a site install with db.
+It essentially runs a series of bash commands that clone drupal-composer project locally, initialises lando and uses [Drupal Console](https://github.com/hechoendrupal/drupal-console) to run a site install with db.
 
 
 #### Prerequisites:
