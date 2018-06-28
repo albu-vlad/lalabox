@@ -4,7 +4,7 @@
 > An electron-vue project
 
 * [Download for osx](https://github.com/albu-vlad/lalabox/raw/master/source/Lalabox-0.0.0.dmg)
-* [Download for ubuntu 17](https://github.com/albu-vlad/lalabox/blob/master/source/Lalabox-0.0.0-x86_64.AppImage)
+* [Download for ubuntu 17](https://github.com/albu-vlad/lalabox/raw/master/source/Lalabox-0.0.0-x86_64.AppImage)
 
 - ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) This is WIP: There will be dragons!
 
