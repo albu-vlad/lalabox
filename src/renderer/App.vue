@@ -1,5 +1,6 @@
 <template>
     <div id="app">
+        <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,700" rel="stylesheet">
         <LandingPage @change-page="changePage" @new-page="newPage" :pages="pages" :activePage="index"/>
         <Page @delete-page="deletePage"
               :page="pages[index]"/>
@@ -98,10 +99,13 @@
 
     body {
         margin: 0;
+        background-color: #000;
     }
 
     #app {
-        font-family: 'Avenir', Helvetica, Arial, sans-serif;
+        font-family: 'Rubik', sans-serif !important;
+        font-size: 16px;
+        line-height: 24px;
         display: flex;
         flex-direction: row;
         height: 100%;

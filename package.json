@@ -1,5 +1,5 @@
 {
-  "name": "drupal-setup",
+  "name": "Lalabox",
   "version": "0.0.0",
   "author": "",
   "description": "An electron-vue project",
@@ -22,7 +22,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "drupal-setup",
+    "productName": "LalaboxDeD",
     "appId": "org.simulatedgreg.electron-vue",
     "directories": {
       "output": "build"

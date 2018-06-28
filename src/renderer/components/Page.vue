@@ -8,7 +8,6 @@
                     <label>Project Title</label>
                 </div>
                 <div class="errors" v-if="page.formErrors.length">
-                    <b>Please correct the following error(s):</b>
                     <ul>
                         <li v-for="error in page.formErrors">{{ error }}</li>
                     </ul>
@@ -19,21 +18,21 @@
                             :animation-duration="2000"
                             :dot-size="12"
                             :dots-num="5"
-                            color="#46bef5"
+                            color="#2962ff"
                     /></div>
                     <div class="messages"><label>Lando Init: </label><span class="setup-message">{{page.landoInitMessage}}</span></div>
                     <div class="messages" v-if="loaderShow === 'loader2'"><hollow-dots-spinner
                             :animation-duration="2000"
                             :dot-size="12"
                             :dots-num="5"
-                            color="#46bef5"
+                            color="#2962ff"
                     /></div>
                     <div class="messages"><label>Composer Install: </label><span class="setup-message">{{page.composerInstallMessage}}</span></div>
                     <div class="messages" v-if="loaderShow === 'loader3'"><hollow-dots-spinner
                             :animation-duration="2000"
                             :dot-size="12"
                             :dots-num="5"
-                            color="#46bef5"
+                            color="#2962ff"
                     /></div>
                     <div class="messages"><label>Project Info: </label>
                         <div class="proj-info-container" v-if="projectInfo">
@@ -59,21 +58,21 @@
                             :animation-duration="2000"
                             :dot-size="12"
                             :dots-num="5"
-                            color="#46bef5"
+                            color="#2962ff"
                     /></div>
                     <div class="messages"><label>Project Credentials: </label><span class="setup-message" v-html="projectCredentials"></span></div>
                     <div class="messages" v-if="loaderShow === 'loader6'"><hollow-dots-spinner
                             :animation-duration="2000"
                             :dot-size="12"
                             :dots-num="5"
-                            color="#46bef5"
+                            color="#2962ff"
                     /></div>
                     <div class="messages"><label>Project Status: </label><span class="setup-message">{{page.projectStartMessage}}</span></div>
                     <div class="messages" v-if="loaderShow === 'loader7'"><hollow-dots-spinner
                             :animation-duration="2000"
                             :dot-size="12"
                             :dots-num="5"
-                            color="#46bef5"
+                            color="#2962ff"
                     /></div>
                 </div>
                 <div class="proj-buttons">
@@ -90,19 +89,10 @@
         <div v-else>
             <section>
                 <div class="center-section">
-                    <span class="loader-icon">
-                        <orbit-spinner
-                                :animation-duration="3000"
-                                :size="45"
-                                color="#32a0f5"
-                        />
-                    </span>
                     <span class="app-title"><h1>Lalabox</h1></span>
                     <hr>
-                    <h2>Blazing fast 5 min Environment install</h2>
-
-                    <p>Lalabox is a one click Drupal environment installer wrapped around Lando and build on electron-vue.
-                    </p>
+                    <h2>Lalabox is a one click Drupal environment installer wrapped around Lando and build on electron-vue.
+                    </h2>
                 </div>
 
             </section>
@@ -115,7 +105,6 @@
   import HollowDotsSpinner from 'epic-spinners/src/components/lib/HollowDotsSpinner'
   import OrbitSpinner from 'epic-spinners/src/components/lib/OrbitSpinner'
 
-  // const fs = require('fs')
   const remote = require('electron').remote
   const app = remote.app
   var home = app.getPath('home')
@@ -358,9 +347,7 @@
         transition: 0.3s;
         padding-left: 1rem;
         padding-right: 1rem;
-        font-family: "adelle-sans", sans-serif;
-        font-weight: 100;
-        /*display: flex;*/
+        font-weight: 400;
         .page-content {
             padding: 2rem;
         }
@@ -376,20 +363,17 @@
             text-align: left;
             position: relative;
             float: left;
-            color: darkgrey;
-            border-left: 2px solid #46bef5;
-            padding-left: 2px;
-            padding-right: 10px;
-            height: 100px;
+            color: #c8cdd0;
+            border-left: 2px solid #415058;
+            padding: 10px;
+
 
             .p-class {
-                font-weight: bold;
+                font-weight: 600;
                 margin: 0px;
+
             }
 
-            .proj-info-container {
-                margin-top: 10px;
-            }
         }
         .messages {
             float: left;
@@ -398,7 +382,17 @@
         }
 
         .errors{
-            color: tomato;
+            text-align: center;
+            color: #ee2b2b;
+            padding: 1rem 2rem;
+            margin: 0.5rem;
+            ul {
+                list-style-type: none;
+                border: 2px solid #ee2b2b;
+                padding: 0.5rem 0.75rem;
+                margin: 0.5rem;
+                border-radius: 0.25rem;
+            }
         }
 
         section{
@@ -409,20 +403,13 @@
             left: 0;
             right: 0;
             text-align: center;
-            margin-top: 25%;
+            margin-top: 35%;
             margin-left: 10%;
 
-            .loader-icon {
-                position: relative;
-                float: left;
-                left: 35%;
-                bottom: 5px;
-            }
-
             h1{
-                color: #46bef5;
+                color: #c8cdd0;
                 font-weight: 300;
-                font-size: 2rem;
+                font-size: 3rem;
                 margin-bottom: 5px;
                 text-align: center;
                 font-weight: bold;
@@ -431,14 +418,17 @@
             hr {
                 content: '';
                 display: block;
+                position: absolute;
                 bottom: 0;
                 left: 0;
-                margin-left: 30%;
+                margin: 0;
                 padding: 0;
-                width: 40%;
+                width: 100%;
                 height: 2px;
                 border: none;
-                background: #46bef5;
+                font-size: 1px;
+                will-change: transform, visibility;
+                transition: all 200ms ease-out;
                 z-index: 10;
             }
 
@@ -446,12 +436,7 @@
                 font-weight: 300;
                 font-size: 1rem;
                 margin-bottom: 40px;
-                color: #46bef5;
-            }
-
-            p{
-                margin-bottom: 40px;
-                color: darkgrey;
+                color: #c8cdd0;
             }
 
         }
@@ -467,7 +452,8 @@
         top: 10px;
         left: 10px;
         font-size: 1rem;
-        color: #46bef5;
+        color: #415058;
+        font-weight: 600;
     }
 
     button {
@@ -477,8 +463,10 @@
         border-radius: 0.25rem;
         color: white;
         font-size: 1rem;
+        font-weight: 600;
         cursor: pointer;
-        background-color: darkgrey;
+        border: 2px solid rgba(255,255,255,0.4);
+        background-color: #000;
 
         &:focus {
             outline: none;
@@ -490,15 +478,19 @@
 
         &:hover {
             &.delete-proj {
-                background-color: tomato;
+                background-color: #ee2b2b;
+                border-color: #ee2b2b;
             }
-            background-color: #46bef5;
+            background-color: #2962ff;
+            border-color: #2962ff;
         }
 
         &:active {
-            background-color: #46bef5;
+            background-color: #2962ff;
+            border-color: #2962ff;
             &.delete-proj {
-                background-color: tomato;
+                background-color: #ee2b2b;
+                border-color: #ee2b2b;
             }
             & > .spinner-stop {
                 margin-right: 0.5rem;
@@ -516,7 +508,7 @@
 
     .setup-message {
         font-size: 1rem;
-        color: darkgrey;
+        color: #c8cdd0;
     }
 
     .messages {
@@ -538,15 +530,13 @@
             border: none;
             border-radius: 0;
             box-shadow: none;
-            border-bottom: 1px solid #DDD;
+            border-bottom: 1px solid #2962ff;
             font-size: 120%;
             outline: none;
             cursor: text;
             background-color: transparent;
-
-            &::-webkit-input-placeholder {
-                transition: color 300ms ease;
-            }
+            color: #fff;
+            font-weight: 600;
         }
 
         hr {
@@ -560,7 +550,7 @@
             width: 100%;
             height: 2px;
             border: none;
-            background: #46bef5;
+            background: #2962ff;
             font-size: 1px;
             will-change: transform, visibility;
             transition: all 200ms ease-out;
@@ -571,8 +561,10 @@
             position: absolute;
             top: 10px;
             left: 10px;
-            font-size: 1.5rem;
-            color: #46bef5;
+            font-size: 1rem;
+            color: #F2F2F3;
+            text-transform: uppercase;
+            font-weight: 500;
             transform-origin: 0 -150%;
             transition: transform 300ms ease;
             pointer-events: none;

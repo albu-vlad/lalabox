@@ -2,7 +2,7 @@
     <div class="notebook">
         <ul>
             <li>
-                Drupal Projects List
+                DRUPAL PROJECTS LIST
             </li>
             <li v-for="(page, index) of pages"
                 class="page"
@@ -40,7 +40,7 @@
     .notebook {
         max-width: 18rem;
         width: 30rem;
-        border-right: 1px solid lightgray;
+        background-color: #1F292E;
     }
 
     ul {
@@ -52,42 +52,36 @@
     }
 
     li {
-        background-color: rgb(245, 245, 245);
         transition-duration: 0.5s;
-
         padding-top: 30px;
         text-align: center;
-
         padding: 0.5rem;
+        font-weight: 600;
         font-size: 1rem;
         min-height: 1.5rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        margin: 2px;
-        color: darkgrey;
-
-        &:hover{
-            cursor: pointer;
-            background-color: rgb(225, 225, 225);
+        color: #415058;
+        border-bottom: 1px solid #415058;
+        &:first-child{
+            top: 10px;
+            left: 10px;
+            font-size: 0.65rem;
+            color: #F2F2F3;
         }
-
-        &.last{
-            border-bottom: none;
+        &:not(:first-child):hover{
+            cursor: pointer;
+            background-color: #c8cdd0;
         }
 
         &.active{
-            border-bottom: none;
             color: white;
-            background-color: #46bef5;
-
-            transition-delay: 0.5s;
-            transform: scale(1.1, 1.1);
-
-            -webkit-transition-delay: 0.5s;
-            -webkit-transform: scale(1.05, 1.2);
+            background-color: #2962ff;
+            transition-delay: 0s;
         }
     }
+
 
     .new-page {
         padding: 1rem;
@@ -95,18 +89,14 @@
         min-height: 1.5rem;
         white-space: nowrap;
         overflow: hidden;
-        background-color: #46bef5;
         width: 30px;
         height: 30px;
         border-radius: 100%;
-        background: #46bef5;
-        border: none;
+        border: 2px solid rgba(255,255,255,0.4);
         outline: none;
         color: #FFF;
         font-size: 45px;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
         transition: .3s;
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -119,6 +109,8 @@
     }
 
     .new-page:hover {
-        background-color: #32a0f5;
+        background-color: #2962ff;
+        border-color: #2962ff;
+        transform: rotate(90deg);
     }
 </style>
