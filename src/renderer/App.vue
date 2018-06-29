@@ -71,22 +71,27 @@
         var self = this
         var projName = this.pages[this.index].title
         var projPath = appProjPath + projName
-        var deleteThis = new Promise(function (resolve, reject) {
-          exec('chmod -R 777 ' + projPath + ' && rm -rf ' + appProjPath + self.pages[self.index].title, (error, stdout, stderr) => {
-            if (error) {
-              console.error(`exec error: ${error}`)
-            }
-            var data = 'drupal clonedrrr'
-            resolve(data)
+        if (self.pages[self.index].title) {
+          var deleteThis = new Promise(function (resolve, reject) {
+            exec('chmod -R 777 ' + projPath + ' && rm -rf ' + appProjPath + self.pages[self.index].title, (error, stdout, stderr) => {
+              if (error) {
+                console.error(`exec error: ${error}`)
+              }
+              var data = 'drupal clonedrrr'
+              resolve(data)
+            })
           })
-        })
-        deleteThis.then(function (test) {
-          db.get('pages')
-            .remove(self.pages[self.index])
-            .write()
+          deleteThis.then(function (test) {
+            db.get('pages')
+              .remove(self.pages[self.index])
+              .write()
+            self.pages.splice(self.index, 1)
+            self.index = Math.max(self.index - 1, 0)
+          })
+        } else {
           self.pages.splice(self.index, 1)
           self.index = Math.max(self.index - 1, 0)
-        })
+        }
       }
     }
   }
