@@ -384,12 +384,13 @@
         .errors{
             text-align: center;
             color: #ee2b2b;
-            padding: 1rem 2rem;
+            padding: 0.5rem 0.5rem;
             margin: 0.5rem;
             ul {
                 list-style-type: none;
                 border: 2px solid #ee2b2b;
-                padding: 0.5rem 0.75rem;
+                background-color: #FFBABA;
+                padding: 0.5rem 0.5rem;
                 margin: 0.5rem;
                 border-radius: 0.25rem;
             }
