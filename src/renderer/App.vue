@@ -4,6 +4,9 @@
         <LandingPage @change-page="changePage" @new-page="newPage" :pages="pages" :activePage="index"/>
         <Page @delete-page="deletePage"
               :page="pages[index]"/>
+        <div v-if="disableButtons === true">
+            <div class="overlay"></div>
+        </div>
     </div>
 </template>
 
@@ -37,7 +40,8 @@
     data () {
       return {
         pages: [],
-        index: 0
+        index: 0,
+        disableButtons: false
       }
     },
     mounted () {
@@ -71,6 +75,7 @@
         var self = this
         var projName = this.pages[this.index].title
         var projPath = appProjPath + projName
+        self.disableButtons = true
         if (self.pages[self.index].title) {
           var deleteThis = new Promise(function (resolve, reject) {
             exec('chmod -R 777 ' + projPath + ' && rm -rf ' + appProjPath + self.pages[self.index].title, (error, stdout, stderr) => {
@@ -87,6 +92,7 @@
               .write()
             self.pages.splice(self.index, 1)
             self.index = Math.max(self.index - 1, 0)
+            self.disableButtons = false
           })
         } else {
           self.pages.splice(self.index, 1)
@@ -115,5 +121,13 @@
         flex-direction: row;
         height: 100%;
         width: 100%;
+    }
+    .overlay {
+        position:fixed;
+        width:100%;
+        height:100%;
+        left:0;
+        top:0;
+        z-index:100000;
     }
 </style>
